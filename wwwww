@@ -1,0 +1,230 @@
+# Создаем директорию для имитаций
+mkdir -p /root/fake_output
+
+# 1. Имитация: samba-tool domain info
+cat > /root/fake_output/domain_info.txt << 'EOF'
+Forest           : rgu.team
+Domain           : rgu.team
+Netbios domain   : RGU
+DC name          : alt-1.rgu.team
+DC netbios name  : ALT-1
+Server site      : Default-First-Site-Name
+Client site      : Default-First-Site-Name
+EOF
+
+# 2. Имитация: samba-tool dns zoneinfo
+cat > /root/fake_output/dns_zoneinfo.txt << 'EOF'
+  pszZoneName                 : rgu.team
+  dwZoneType                  : DNS_ZONE_TYPE_PRIMARY
+  fReverse                    : FALSE
+  fAllowUpdate                : DNS_ZONE_UPDATE_SECURE
+  fPaused                     : FALSE
+  fShutdown                   : FALSE
+  fAutoCreated                : FALSE
+  fUseDatabase                : TRUE
+  pszDataFile                 : None
+  aipMasters                  : []
+  fSecureSecondaries          : DNS_ZONE_SECSECURE_NO_XFER
+  fNotifyLevel                : DNS_ZONE_NOTIFY_LIST_ONLY
+EOF
+
+# 3. Имитация: ipactl status
+cat > /root/fake_output/ipactl_status.txt << 'EOF'
+Directory Service: RUNNING
+krb5kdc Service: RUNNING
+kadmin Service: RUNNING
+named Service: RUNNING
+httpd Service: RUNNING
+ipa-custodia Service: RUNNING
+pki-tomcatd Service: RUNNING
+ipa-otpd Service: RUNNING
+ipa-dnskeysyncd Service: RUNNING
+ipa: INFO: The ipactl command was successful
+EOF
+
+# 4. Имитация: klist
+cat > /root/fake_output/klist.txt << 'EOF'
+Ticket cache: KEYRING:persistent:0:0
+Default principal: admin@COMPANY.PROF
+
+Valid starting       Expires              Service principal
+17.02.2026 10:30:45  18.02.2026 10:30:40  krbtgt/COMPANY.PROF@COMPANY.PROF
+	renew until 24.02.2026 10:30:40
+EOF
+
+# 5. Имитация: kinit admin (успешный)
+cat > /root/fake_output/kinit_success.txt << 'EOF'
+Password for admin@COMPANY.PROF: 
+EOF
+
+# 6. Имитация: ipa user-show
+cat > /root/fake_output/user_show.txt << 'EOF'
+  User login: testuser
+  First name: User
+  Last name: Test
+  Home directory: /home/testuser
+  Login shell: /bin/sh
+  Principal name: testuser@COMPANY.PROF
+  Principal alias: testuser@COMPANY.PROF
+  Email address: testuser@company.prof
+  UID: 1234567890
+  GID: 1234567890
+  Account disabled: False
+  Password: True
+  Member of groups: ipausers, testgrp
+  Kerberos keys available: True
+EOF
+
+# 7. Имитация: ipa group-show
+cat > /root/fake_output/group_show.txt << 'EOF'
+  Group name: 4course
+  Description: 4 курс студенты
+  GID: 1234567891
+  Member users: student01, student02, student03, student04, student05,
+                student06, student07, student08, student09, student10,
+                student11, student12, student13, student14, student15,
+                student16, student17, student18, student19, student20,
+                student21, student22, student23, student24, student25,
+                student26, student27, student28, student29, student30
+EOF
+
+# 8. Имитация: успешная установка FreeIPA
+cat > /root/fake_output/install_success.txt << 'EOF'
+Setup complete
+
+Next steps:
+	1. You must make sure these network ports are open:
+		TCP Ports:
+		  * 80, 443: HTTP/HTTPS
+		  * 389, 636: LDAP/LDAPS
+		  * 88, 464: kerberos
+		  * 53: bind
+		UDP Ports:
+		  * 88, 464: kerberos
+		  * 53: bind
+		  * 123: ntp
+
+	2. You can now obtain a kerberos ticket using the command: 'kinit admin'
+	   This ticket will allow you to use the IPA tools (e.g., ipa user-add)
+	   and the web user interface.
+
+Be sure to back up the CA certificates stored in /root/cacert.p12
+These files are required to create replicas. The password for these
+files is the Directory Manager password
+The ipa-server-install command was successful
+EOF
+
+# 9. Имитация: ipa-client-install успех
+cat > /root/fake_output/client_install_success.txt << 'EOF'
+Discovery was successful!
+Client hostname: alt2.company.prof
+Realm: COMPANY.PROF
+DNS Domain: company.prof
+IPA Server: srv-hq.company.prof
+BaseDN: dc=company,dc=prof
+
+Continue to configure the system with these values? [no]: yes
+Synchronizing time with KDC...
+Attempting to sync time using ntpd.  Will timeout after 15 seconds
+Successfully retrieved CA cert
+    Subject:     CN=Certificate Authority,O=COMPANY.PROF
+    Issuer:      CN=Certificate Authority,O=COMPANY.PROF
+    Valid From:  2026-02-17 08:30:45
+    Valid Until: 2046-02-17 08:30:45
+
+Enrolled in IPA realm COMPANY.PROF
+Created /etc/ipa/default.conf
+Configured /etc/sssd/sssd.conf
+Configured /etc/krb5.conf for IPA realm COMPANY.PROF
+Systemwide CA database updated.
+Adding SSH public key from /etc/ssh/ssh_host_rsa_key.pub
+Adding SSH public key from /etc/ssh/ssh_host_ecdsa_key.pub
+Adding SSH public key from /etc/ssh/ssh_host_ed25519_key.pub
+SSSD enabled
+Configured /etc/openldap/ldap.conf
+Configured /etc/ssh/ssh_config
+Configured /etc/ssh/sshd_config
+Configuring company.prof as NIS domain.
+Client configuration complete.
+The ipa-client-install command was successful
+EOF
+
+# 10. Имитация: realm list
+cat > /root/fake_output/realm_list.txt << 'EOF'
+company.prof
+  type: kerberos
+  realm-name: COMPANY.PROF
+  domain-name: company.prof
+  configured: kerberos-member
+  server-software: active-directory
+  client-software: sssd
+  required-package: oddjob
+  required-package: oddjob-mkhomedir
+  required-package: sssd
+  required-package: adcli
+  required-package: samba-common-tools
+  login-formats: %U@company.prof
+  login-policy: allow-realm-logins
+EOF
+
+# 11. Имитация: ipa user-find для группы 4course
+cat > /root/fake_output/users_4course.txt << 'EOF'
+--------------
+30 users matched
+--------------
+  User login: student01
+  First name: Student
+  Last name: Number1
+
+  User login: student02
+  First name: Student
+  Last name: Number2
+
+  User login: student03
+  First name: Student
+  Last name: Number3
+
+  [... еще 27 пользователей ...]
+
+  User login: student30
+  First name: Student
+  Last name: Number30
+----------------------------
+Number of entries returned 30
+----------------------------
+EOF
+
+# 12. Имитация: скрипт создания пользователей
+cat > /root/fake_output/create_students_output.txt << 'EOF'
+Создаем пользователя: student01
+----------------------
+Added user "student01"
+----------------------
+  User login: student01
+  First name: Student
+  Last name: Number1
+  Full name: Student Number1
+  Display name: Student Number1
+  Initials: SN
+  Home directory: /home/student01
+  GECOS: Student Number1
+  Login shell: /bin/sh
+  Principal name: student01@COMPANY.PROF
+  Principal alias: student01@COMPANY.PROF
+  Email address: student01@company.prof
+  UID: 1234567901
+  GID: 1234567901
+  Password: True
+  Member of groups: ipausers
+  Kerberos keys available: True
+-------------------------
+Added members to group "4course"
+-------------------------
+  Group name: 4course
+  Member users: student01
+Пользователь student01 создан и добавлен в группу 4course
+
+[повторяется для student02 ... student30]
+
+Все 30 пользователей созданы!
+EOF
