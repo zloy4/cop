@@ -1,0 +1,262 @@
+# Создаем директорию для фейковых выводов
+mkdir -p /root/fake_output
+
+# 1. Успешная установка FreeIPA
+cat > /root/fake_output/install_success.txt << 'EOF'
+Setup complete
+
+Next steps:
+	1. You must make sure these network ports are open:
+		TCP Ports:
+		  * 80, 443: HTTP/HTTPS
+		  * 389, 636: LDAP/LDAPS
+		  * 88, 464: kerberos
+		  * 53: bind
+		UDP Ports:
+		  * 88, 464: kerberos
+		  * 53: bind
+		  * 123: ntp
+
+	2. You can now obtain a kerberos ticket using the command: 'kinit admin'
+	   This ticket will allow you to use the IPA tools (e.g., ipa user-add)
+	   and the web user interface.
+
+Be sure to back up the CA certificates stored in /root/cacert.p12
+These files are required to create replicas. The password for these
+files is the Directory Manager password
+The ipa-server-install command was successful
+EOF
+
+# 2. ipactl status
+cat > /root/fake_output/ipactl_status.txt << 'EOF'
+Directory Service: RUNNING
+krb5kdc Service: RUNNING
+kadmin Service: RUNNING
+named Service: RUNNING
+httpd Service: RUNNING
+ipa-custodia Service: RUNNING
+pki-tomcatd Service: RUNNING
+ipa-otpd Service: RUNNING
+ipa-dnskeysyncd Service: RUNNING
+ipa: INFO: The ipactl command was successful
+EOF
+
+# 3. kinit admin
+cat > /root/fake_output/kinit_admin.txt << 'EOF'
+Password for admin@AU.TEAM:
+EOF
+
+# 4. klist
+cat > /root/fake_output/klist.txt << 'EOF'
+Ticket cache: KEYRING:persistent:0:0
+Default principal: admin@AU.TEAM
+
+Valid starting       Expires              Service principal
+06.06.2025 10:02:41  07.06.2025 09:27:24  krbtgt/AU.TEAM@AU.TEAM
+EOF
+
+# 5. ipa user-add testuser
+cat > /root/fake_output/user_add_testuser.txt << 'EOF'
+Пароль:
+Введите Пароль ещё раз для проверки:
+----------------------------------
+Добавлен пользователь "testuser"
+----------------------------------
+  Имя учётной записи пользователя: testuser
+  Имя: User
+  Фамилия: Test
+  Полное имя: User Test
+  Отображаемое имя: User Test
+  Инициалы: UT
+  Домашний каталог: /home/testuser
+  GECOS: User Test
+  Оболочка входа: /bin/bash
+  Имя учётной записи: testuser@AU.TEAM
+  Псевдоним учётной записи: testuser@AU.TEAM
+  Окончание действия пароля пользователя: 20250606070400Z
+  Адрес электронной почты: testuser@au.team
+  UID: 1062400003
+  ID группы: 1062400003
+  Пароль: True
+  Участник групп: ipausers
+  Доступные ключи Kerberos: True
+EOF
+
+# 6. ipa user-mod testuser (срок действия пароля)
+cat > /root/fake_output/user_mod_testuser.txt << 'EOF'
+----------------------------------
+Изменён пользователь "testuser"
+----------------------------------
+  Имя учётной записи пользователя: testuser
+  Имя: User
+  Фамилия: Test
+  Домашний каталог: /home/testuser
+  Оболочка входа: /bin/bash
+  Имя учётной записи: testuser@AU.TEAM
+  Псевдоним учётной записи: testuser@AU.TEAM
+  Окончание действия пароля пользователя: 20291225011529Z
+  Адрес электронной почты: testuser@au.team
+  UID: 1062400003
+  ID группы: 1062400003
+  Учётная запись отключена: False
+  Пароль: True
+  Участник групп: ipausers
+  Доступные ключи Kerberos: True
+EOF
+
+# 7. ipa group-add testgrp
+cat > /root/fake_output/group_add_testgrp.txt << 'EOF'
+---------------------------
+Добавлена группа "testgrp"
+---------------------------
+  Имя группы: testgrp
+  ID группы: 1062400004
+EOF
+
+# 8. ipa group-add-member testgrp --users=testuser
+cat > /root/fake_output/group_add_member.txt << 'EOF'
+  Имя группы: testgrp
+  ID группы: 1062400004
+  Пользователи-участники: testuser
+----------------------------------
+Количество добавленных участников 1
+----------------------------------
+EOF
+
+# 9. Создание группы 4course
+cat > /root/fake_output/group_add_4course.txt << 'EOF'
+---------------------------
+Добавлена группа "4course"
+---------------------------
+  Имя группы: 4course
+  Описание: 4 курс студенты
+  ID группы: 1062400005
+EOF
+
+# 10. Скрипт создания 30 студентов - вывод
+cat > /root/fake_output/create_students_output.txt << 'EOF'
+Создаем пользователя: student01
+----------------------------------
+Добавлен пользователь "student01"
+----------------------------------
+  Имя учётной записи пользователя: student01
+  Имя: Student
+  Фамилия: Number1
+  Полное имя: Student Number1
+  Домашний каталог: /home/student01
+  Имя учётной записи: student01@AU.TEAM
+  UID: 1062400010
+  Пароль: True
+  Участник групп: ipausers
+----------------------------------
+Изменён пользователь "student01"
+----------------------------------
+  Окончание действия пароля пользователя: 20291225011529Z
+  Имя группы: 4course
+  Пользователи-участники: student01
+Пользователь student01 создан и добавлен в группу 4course
+
+Создаем пользователя: student02
+----------------------------------
+Добавлен пользователь "student02"
+----------------------------------
+  Имя учётной записи пользователя: student02
+  Имя: Student
+  Фамилия: Number2
+  Полное имя: Student Number2
+  Домашний каталог: /home/student02
+  Имя учётной записи: student02@AU.TEAM
+  UID: 1062400011
+  Пароль: True
+  Участник групп: ipausers
+----------------------------------
+Изменён пользователь "student02"
+----------------------------------
+  Окончание действия пароля пользователя: 20291225011529Z
+  Имя группы: 4course
+  Пользователи-участники: student01, student02
+Пользователь student02 создан и добавлен в группу 4course
+
+Создаем пользователя: student03
+----------------------------------
+Добавлен пользователь "student03"
+----------------------------------
+Пользователь student03 создан и добавлен в группу 4course
+
+[... аналогично для student04 - student29 ...]
+
+Создаем пользователя: student30
+----------------------------------
+Добавлен пользователь "student30"
+----------------------------------
+  Имя учётной записи пользователя: student30
+  Имя: Student
+  Фамилия: Number30
+  Полное имя: Student Number30
+  Домашний каталог: /home/student30
+  Имя учётной записи: student30@AU.TEAM
+  UID: 1062400039
+  Пароль: True
+  Участник групп: ipausers
+----------------------------------
+Изменён пользователь "student30"
+----------------------------------
+  Окончание действия пароля пользователя: 20291225011529Z
+  Имя группы: 4course
+  Пользователи-участники: student01, student02, student03, student04, student05, student06, student07, student08, student09, student10, student11, student12, student13, student14, student15, student16, student17, student18, student19, student20, student21, student22, student23, student24, student25, student26, student27, student28, student29, student30
+Пользователь student30 создан и добавлен в группу 4course
+
+Все 30 пользователей созданы!
+EOF
+
+# 11. ipa user-find --group=4course
+cat > /root/fake_output/users_4course.txt << 'EOF'
+--------------
+30 users matched
+--------------
+  Имя учётной записи пользователя: student01
+  Имя: Student
+  Фамилия: Number1
+  Домашний каталог: /home/student01
+  Оболочка входа: /bin/bash
+  Имя учётной записи: student01@AU.TEAM
+  UID: 1062400010
+  ID группы: 1062400010
+
+  Имя учётной записи пользователя: student02
+  Имя: Student
+  Фамилия: Number2
+  Домашний каталог: /home/student02
+  Оболочка входа: /bin/bash
+  Имя учётной записи: student02@AU.TEAM
+  UID: 1062400011
+  ID группы: 1062400011
+
+  Имя учётной записи пользователя: student03
+  Имя: Student
+  Фамилия: Number3
+
+[... student04 - student29 ...]
+
+  Имя учётной записи пользователя: student30
+  Имя: Student
+  Фамилия: Number30
+  Домашний каталог: /home/student30
+  Оболочка входа: /bin/bash
+  Имя учётной записи: student30@AU.TEAM
+  UID: 1062400039
+  ID группы: 1062400039
+----------------------------
+Number of entries returned 30
+----------------------------
+EOF
+
+# 12. ipa group-show 4course
+cat > /root/fake_output/group_show_4course.txt << 'EOF'
+  Имя группы: 4course
+  Описание: 4 курс студенты
+  ID группы: 1062400005
+  Пользователи-участники: student01, student02, student03, student04, student05, student06, student07, student08, student09, student10, student11, student12, student13, student14, student15, student16, student17, student18, student19, student20, student21, student22, student23, student24, student25, student26, student27, student28, student29, student30
+EOF
+
+echo "Все файлы-имитации созданы в /root/fake_output/"
